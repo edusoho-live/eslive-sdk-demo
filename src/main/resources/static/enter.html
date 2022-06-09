@@ -17,7 +17,7 @@
         const query = Object.fromEntries(urlSearchParams.entries());
         console.log("query params", query);
 
-        const url = query.role === "speaker" ? `/api/lesson/getRoomTokenForSpeaker?id=${query.id}` : `/api/lesson/getRoomTokenForViewer?id=${query.id}`
+        const url = query.role === "speaker" ? `/api/lesson/enterForSpeaker?id=${query.id}` : `/api/lesson/enterForViewer?id=${query.id}`
         console.log("request api url: ", url);
 
         const response = await fetch(url);
@@ -30,15 +30,7 @@
 
         console.log("room params: ", roomParams);
 
-        const sdk = new ESLiveWebSDK({
-            entryUrl: "//live-dev.edusoho.cn", // 直播测试站地址，如正式站无需传此参数
-        });
-
-        await sdk.connect({
-            container: "eslive-container",
-            roomId: roomParams.roomId,
-            token: roomParams.token,
-        });
+        window.location.href = roomParams.url;
     }
     run();
 </script>

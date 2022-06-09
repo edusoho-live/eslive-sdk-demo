@@ -3,7 +3,7 @@ package com.edusoholive.demo.dto;
 import lombok.Data;
 
 @Data
-public class LessonGetRoomTokenParams {
+public class LessonRoomEnterParams {
     /**
      * 课时ID
      */

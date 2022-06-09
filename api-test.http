@@ -16,10 +16,10 @@ client.global.set("lessonId", response.body.id);
 GET http://localhost:8801/api/lesson/findAll
 Content-Type: application/json
 
-### getRoomTokenForTeacher
-GET http://localhost:8801/api/lesson/getRoomTokenForTeacher?id={{lessonId}}
+### enterForSpeaker
+GET http://localhost:8801/api/lesson/enterForSpeaker?id={{lessonId}}
 Content-Type: application/json
 
-### getRoomTokenForStudent
-GET http://localhost:8801/api/lesson/getRoomTokenForStudent?id={{lessonId}}
+### enterForViewer
+GET http://localhost:8801/api/lesson/enterForViewer?id={{lessonId}}
 Content-Type: application/json

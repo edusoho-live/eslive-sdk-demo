@@ -1,10 +1,9 @@
 package com.edusoholive.demo.service.impl;
 
-import com.auth0.jwt.JWT;
 import com.edusoholive.demo.dto.LessonCreateParams;
 import com.edusoholive.demo.dto.LessonDto;
-import com.edusoholive.demo.dto.LessonRoomTokenDto;
-import com.edusoholive.demo.dto.LessonGetRoomTokenParams;
+import com.edusoholive.demo.dto.LessonRoomEnterDto;
+import com.edusoholive.demo.dto.LessonRoomEnterParams;
 import com.edusoholive.demo.mapper.LessonMapper;
 import com.edusoholive.demo.repository.LessonRepository;
 import com.edusoholive.demo.sdk.EsliveApiClient;
@@ -56,7 +55,7 @@ public class LessonServiceImpl implements LessonService {
     }
 
     @Override
-    public LessonRoomTokenDto getRoomToken(LessonGetRoomTokenParams params) {
+    public LessonRoomEnterDto getRoomEnterUrl(LessonRoomEnterParams params) {
         var lesson = repository.findById(params.getLessonId())
                 .orElseThrow(() -> new RuntimeException("课时不存在"));
 
@@ -76,11 +75,10 @@ public class LessonServiceImpl implements LessonService {
             throw new RuntimeException("用户不存在");
         }
 
-        var token = apiClient.makeEntryToken(lesson.getRoomId(), params.getUserId(), username, role);
+        var url = apiClient.roomGetEnterUrl(lesson.getRoomId(), params.getUserId(), username, role);
 
-        var roomTokenDto = new LessonRoomTokenDto();
-        roomTokenDto.setRoomId(lesson.getRoomId());
-        roomTokenDto.setToken(token);
+        var roomTokenDto = new LessonRoomEnterDto();
+        roomTokenDto.setUrl(url);
 
         return roomTokenDto;
     }

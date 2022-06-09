@@ -2,10 +2,9 @@ package com.edusoholive.demo.service;
 
 import com.edusoholive.demo.dto.LessonCreateParams;
 import com.edusoholive.demo.dto.LessonDto;
-import com.edusoholive.demo.dto.LessonRoomTokenDto;
-import com.edusoholive.demo.dto.LessonGetRoomTokenParams;
+import com.edusoholive.demo.dto.LessonRoomEnterDto;
+import com.edusoholive.demo.dto.LessonRoomEnterParams;
 
-import java.io.IOException;
 import java.util.List;
 
 public interface LessonService {
@@ -21,7 +20,7 @@ public interface LessonService {
     LessonDto create(LessonCreateParams params);
 
     /**
-     * 获取进入直播课堂的 RoomId 和 Token
+     * 获取进入直播课堂的地址
      */
-    LessonRoomTokenDto getRoomToken(LessonGetRoomTokenParams params);
+    LessonRoomEnterDto getRoomEnterUrl(LessonRoomEnterParams params);
 }

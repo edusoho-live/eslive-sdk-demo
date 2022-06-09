@@ -32,6 +32,8 @@ public class EsliveApiClient {
 
     private String secretKey = "testSecretKey4";
 
+    private String server = "live-dev.edusoho.cn";
+
     public Pager<RoomMember> memberList(RoomCreateParams params) {
         var pagerType = new TypeToken<Pager<RoomMember>>(){}.getType();
         return request(GET, "member/list", params, pagerType);
@@ -49,22 +51,24 @@ public class EsliveApiClient {
 //
 //    }
 
-    public String makeEntryToken(Long roomId, Long userId, String name, Role role) {
-        return JWT.create()
+    public String roomGetEnterUrl(Long roomId, Long userId, String name, Role role) {
+        var token = JWT.create()
                 .withKeyId(accessKey)
                 .withIssuer("live client api")
                 .withClaim("rid", roomId)
                 .withClaim("uid", userId)
                 .withClaim("name",name)
-                .withClaim("role", role.name())
+                .withClaim("role", role.name().toLowerCase())
                 .withExpiresAt(new Date(System.currentTimeMillis() + 1800000))
                 .sign(Algorithm.HMAC256(secretKey));
+
+        return "https://" + server + "/h5/room/" + roomId.toString() + "/enter?token=" + token;
     }
 
     private <T> T request(String method, String uri, Object params, Type responseClass) {
         var urlBuilder = new HttpUrl.Builder()
                 .scheme("https")
-                .host("live-dev.edusoho.cn")
+                .host(server)
                 .addPathSegment("api-v2")
                 .addPathSegments(uri);
 
