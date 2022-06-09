@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>EduSoho 大班课 SDK DEMO</title>
+    <link href="lib/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <script src="lib/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="lib/common.js" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-md navbar-dark bg-primary text-white">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="index.html">EduSoho 大班课 SDK DEMO</a>
+    </div>
+</nav>
+
+<main class="container">
+    <div class="d-flex justify-content-between mt-5 mb-5">
+        <h3>创建直播课时</h3>
+    </div>
+
+    <form>
+        <div class="mb-3">
+            <label class="form-label">课时名称</label>
+            <input type="text" class="form-control" id="lesson-name">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">开始时间</label>
+            <input type="text" class="form-control" id="lesson-start-at">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">结束时间</label>
+            <input type="text" class="form-control" id="lesson-end-at">
+        </div>
+        <button type="button" class="btn btn-primary" id="create-btn">创建</button>
+    </form>
+
+</main>
+
+<script>
+    const run = async () => {
+        const now = new Date();
+        const startAt = new Date(now.getTime() + 600000);
+        const endAt = new Date(now.getTime() + 4200000);
+
+        document.getElementById("lesson-name").value = "测试课时-" + dateFormat("HHMM", now);
+        document.getElementById("lesson-start-at").value = dateFormat("YYYY-mm-dd HH:MM", startAt);
+        document.getElementById("lesson-end-at").value = dateFormat("YYYY-mm-dd HH:MM", endAt);
+
+        document.getElementById("create-btn").addEventListener("click", async () => {
+
+            const params = {
+                name: document.getElementById("lesson-name").value,
+                startAt: new Date(document.getElementById("lesson-start-at").value).getTime(),
+                endAt: new Date(document.getElementById("lesson-end-at").value).getTime(),
+            }
+
+            console.log("post params", params);
+
+            const response = await fetch("/api/lesson/create", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8'
+                },
+                body: JSON.stringify(params),
+            });
+
+            if (!response.ok) {
+                alert("请求后端接口失败，请查看控制台报错日志");
+                return ;
+            }
+
+            const lesson = await response.json();
+            console.log("lesson created success: ", lesson);
+
+            alert("创建成功");
+            window.location.href = "index.html";
+        });
+    }
+    run();
+</script>
+
+</body>
+</html>

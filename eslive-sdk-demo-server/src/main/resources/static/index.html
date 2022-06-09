@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>EduSoho 大班课 SDK DEMO</title>
+    <link href="lib/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <script src="lib/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="lib/common.js" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-md navbar-dark bg-primary text-white">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="index.html">EduSoho 大班课 SDK DEMO</a>
+    </div>
+</nav>
+
+<main class="container">
+    <div class="d-flex justify-content-between mt-5 mb-5">
+        <h3>演示课程</h3>
+        <a class="btn btn-primary" href="create.html">创建直播课时</a>
+    </div>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">课时ID</th>
+            <th scope="col">课时名称</th>
+            <th scope="col">直播课堂ID</th>
+            <th scope="col">开始时间</th>
+            <th scope="col">结束时间</th>
+            <th scope="col">进入直播课堂</th>
+        </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+    </table>
+</main>
+
+<script>
+    const run = async () => {
+        const response = await fetch("/api/lesson/findAll");
+        if (!response.ok) {
+            alert("请求后端接口失败，请查看控制台报错日志");
+            return ;
+        }
+
+        const lessons = await response.json();
+
+        let html = "";
+        for(const lesson of lessons) {
+            const startAt = dateFormat("YYYY-mm-dd HH:MM", new Date(lesson.startAt));
+            const endAt = dateFormat("YYYY-mm-dd HH:MM", new Date(lesson.endAt));
+
+            html += `<tr>`
+                + `<td>${lesson.id}</td>`
+                + `<td>${lesson.name}</td>`
+                + `<td>${lesson.roomId}</td>`
+                + `<td>${startAt}</td>`
+                + `<td>${endAt}</td>`
+                + `<td>`
+                + `<a class="btn btn-link" target="_blank" href="lesson.html?id=${lesson.id}&role=speaker">老师进入</a>`
+                + `<a class="btn btn-link" target="_blank" href="lesson.html?id=${lesson.id}&role=student">学员进入</a>`
+                + '</tr>';
+        }
+
+        document.getElementById("table-body").innerHTML = html;
+    }
+    run();
+</script>
+
+</body>
+</html>

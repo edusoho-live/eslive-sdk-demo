@@ -1,0 +1,25 @@
+### Lesson Create
+POST http://localhost:8801/api/lesson/create
+Content-Type: application/json
+
+{
+  "name": "测试直播课堂",
+  "startAt": 1655565000000,
+  "endAt": 1655566000000
+}
+
+> {%
+client.global.set("lessonId", response.body.id);
+%}
+
+### Lesson FindAll
+GET http://localhost:8801/api/lesson/findAll
+Content-Type: application/json
+
+### getRoomTokenForTeacher
+GET http://localhost:8801/api/lesson/getRoomTokenForTeacher?id={{lessonId}}
+Content-Type: application/json
+
+### getRoomTokenForStudent
+GET http://localhost:8801/api/lesson/getRoomTokenForStudent?id={{lessonId}}
+Content-Type: application/json

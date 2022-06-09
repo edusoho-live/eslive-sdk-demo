@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,minimum-scale=1,viewport-fit=cover,user-scalable=no">
+    <title>EduSoho 大班课 SDK DEMO</title>
+    <script src="lib/common.js"></script>
+    <script src="//unpkg.com/@edusoho-live/eslive-web-sdk@latest"></script>
+</head>
+<body>
+
+<div id="eslive-container" style="position: absolute;left: 0;right: 0;top: 0;bottom: 0;"></div>
+
+<script>
+    const run = async () => {
+        const urlSearchParams = new URLSearchParams(window.location.search);
+        const query = Object.fromEntries(urlSearchParams.entries());
+        console.log("query params", query);
+
+        const url = query.role === "speaker" ? `/api/lesson/getRoomTokenForSpeaker?id=${query.id}` : `/api/lesson/getRoomTokenForViewer?id=${query.id}`
+        console.log("request api url: ", url);
+
+        const response = await fetch(url);
+        if (!response.ok) {
+            alert("请求后端接口失败，请查看控制台报错日志");
+            return ;
+        }
+
+        const result = await response.json();
+
+        console.log(result);
+
+        const sdk = new LiveWebSDK({
+            entryUrl: "//live-dev.edusoho.cn", // 直播测试站地址，如正式站无需传此参数
+        });
+
+        await sdk.connect({
+            container: "eslive-container",
+            roomId: result.roomId,
+            token: result.token,
+        });
+    }
+    run();
+</script>
+
+</body>
+</html>

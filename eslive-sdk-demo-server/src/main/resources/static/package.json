@@ -1,0 +1,14 @@
+{
+  "private": true,
+  "scripts": {
+    "dev": "node lib/dev-server.js"
+  },
+
+  "devDependencies": {
+    "http-proxy-middleware": "^2.0.6",
+    "koa": "^2.13.4",
+    "koa-mount": "^4.0.0",
+    "koa-static": "^5.0.0",
+    "koa2-connect": "^1.0.2"
+  }
+}
