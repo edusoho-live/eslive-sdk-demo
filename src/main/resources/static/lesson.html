@@ -26,18 +26,18 @@
             return ;
         }
 
-        const result = await response.json();
+        const roomParams = await response.json();
 
-        console.log(result);
+        console.log("room params: ", roomParams);
 
-        const sdk = new LiveWebSDK({
+        const sdk = new ESLiveWebSDK({
             entryUrl: "//live-dev.edusoho.cn", // 直播测试站地址，如正式站无需传此参数
         });
 
         await sdk.connect({
             container: "eslive-container",
-            roomId: result.roomId,
-            token: result.token,
+            roomId: roomParams.roomId,
+            token: roomParams.token,
         });
     }
     run();
