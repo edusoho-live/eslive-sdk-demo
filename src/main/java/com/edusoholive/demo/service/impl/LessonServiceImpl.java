@@ -6,10 +6,12 @@ import com.edusoholive.demo.dto.LessonRoomEnterDto;
 import com.edusoholive.demo.dto.LessonRoomEnterParams;
 import com.edusoholive.demo.mapper.LessonMapper;
 import com.edusoholive.demo.repository.LessonRepository;
+import com.edusoholive.demo.sdk.ClientConfig;
 import com.edusoholive.demo.sdk.EsliveApiClient;
 import com.edusoholive.demo.sdk.model.Role;
 import com.edusoholive.demo.service.LessonService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,10 +27,18 @@ public class LessonServiceImpl implements LessonService {
 
     private final EsliveApiClient apiClient;
 
-    public LessonServiceImpl(LessonRepository repository, LessonMapper mapper, EsliveApiClient apiClient) {
+    public LessonServiceImpl(LessonRepository repository, LessonMapper mapper, Environment env) {
         this.repository = repository;
         this.mapper = mapper;
-        this.apiClient = apiClient;
+
+        var config = new ClientConfig();
+        config.setServer(env.getProperty("eslive.server", ""));
+        config.setAccessKey(env.getProperty("eslive.accessKey", ""));
+        config.setSecretKey(env.getProperty("eslive.secretKey", ""));
+
+        log.info("api client config {}", config);
+
+        this.apiClient = new EsliveApiClient(config);
     }
 
     @Override

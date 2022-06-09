@@ -5,16 +5,13 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.edusoholive.demo.sdk.model.*;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
-import org.springframework.stereotype.Component;
+import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.Map;
 
-@Slf4j
-@Component
 public class EsliveApiClient {
 
     private static final String POST = "POST";
@@ -33,6 +30,14 @@ public class EsliveApiClient {
     private String secretKey = "testSecretKey4";
 
     private String server = "live-dev.edusoho.cn";
+
+    public EsliveApiClient(ClientConfig config) {
+        if (StringUtils.isNotBlank(config.getServer())) {
+            server = config.getServer();
+        }
+        accessKey = config.getAccessKey();
+        secretKey = config.getSecretKey();
+    }
 
     public Pager<RoomMember> memberList(RoomCreateParams params) {
         var pagerType = new TypeToken<Pager<RoomMember>>(){}.getType();
@@ -79,7 +84,6 @@ public class EsliveApiClient {
             }
         }
         var url = urlBuilder.build();
-        log.info(":-> {} {}", method, url);
 
         var token = JWT.create()
                 .withKeyId(accessKey)
@@ -94,7 +98,6 @@ public class EsliveApiClient {
 
         if (POST.equals(method)) {
             var body = gson.toJson(params);
-            log.info("    {}", body);
             req.post(RequestBody.create(body, JSON_TYPE));
         }
 
