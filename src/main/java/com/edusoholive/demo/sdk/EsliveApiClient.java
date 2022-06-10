@@ -7,7 +7,6 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
-import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Type;
 import java.util.Date;
@@ -44,36 +43,52 @@ public class EsliveApiClient {
     }
 
     public Room roomGet(Long id) {
-        var params = Map.of("id", id.toString());
-        return request(GET, "room/get", params, Room.class);
+        return get("/room/get", Map.of("id", id.toString()), Room.class);
     }
 
     public RoomSimple roomCreate(RoomCreateParams params) {
-        return request( POST, "room/create", params, RoomSimple.class);
+        return post("/room/create", params, RoomSimple.class);
     }
 
     public RoomSimple roomUpdate(RoomUpdateParams params) {
-        return request( POST, "room/update", params, RoomSimple.class);
+        return post( "/room/update", params, RoomSimple.class);
     }
 
     public BooleanResponse roomClose(Long id) {
         var params = Map.of("id", id.toString());
-        return request(POST, "room/close", params, BooleanResponse.class);
+        return post( "/room/close", params, BooleanResponse.class);
     }
 
     public BooleanResponse roomDelete(Long id) {
         var params = Map.of("id", id.toString());
-        return request(POST, "room/delete", params, BooleanResponse.class);
+        return post("/room/delete", params, BooleanResponse.class);
     }
 
     public Pager<Member> memberList(MemberListParams params) {
         var pagerType = new TypeToken<Pager<Member>>(){}.getType();
-        return request(GET, "member/list", params, pagerType);
+        return get("/member/list", params, pagerType);
     }
 
     public Pager<MemberVisit> memberListVisits(MemberListVisitsParams params) {
         var pagerType = new TypeToken<Pager<MemberVisit>>(){}.getType();
-        return request(GET, "member/listVisits", params, pagerType);
+        return get("/member/listVisits", params, pagerType);
+    }
+
+    public Replay replayGet(Long roomId) {
+        return get("/replay/get", Map.of("roomId", roomId.toString()), Replay.class);
+    }
+
+    public List<Replay> replayGets(List<Long> roomIds) {
+        var roomIdsStr = roomIds.stream().map(Object::toString).collect(Collectors.joining(","));
+        var params = Map.of("roomIds", roomIdsStr);
+
+        var listType = new TypeToken<List<MemberVisit>>(){}.getType();
+        return get("/replay/gets", params, listType);
+    }
+
+    public BooleanResponse replayDelete(Long roomId) {
+        var params = Map.of("roomId", roomId.toString());
+        return post("/replay/delete", params, BooleanResponse.class);
     }
 
     public String roomGetEnterUrl(Long roomId, Long userId, String name, Role role) {
@@ -90,49 +105,24 @@ public class EsliveApiClient {
         return "https://" + server + "/h5/room/" + roomId.toString() + "/enter?token=" + token;
     }
 
-    public Replay replayGet(Long roomId) {
-        var params = Map.of("roomId", roomId.toString());
-        return request(GET, "replay/get", params, Replay.class);
+    private <T> T get(String uri, QueryParams params, Type responseClass) {
+        uri = Utils.appendQueryParams(uri, params);
+        return request(GET, uri, null, responseClass);
     }
 
-    public List<Replay> replayGets(List<Long> roomIds) {
-        var roomIdsStr = roomIds.stream().map(Object::toString).collect(Collectors.joining(","));
-
-        log.info("room id str: {}", roomIdsStr);
-
-        var params = Map.of("roomIds", roomIdsStr);
-
-        var listType = new TypeToken<List<MemberVisit>>(){}.getType();
-        return request(GET, "replay/gets", params, listType);
+    private <T> T get(String uri, Map<String, String> params, Type responseClass) {
+        uri = Utils.appendQueryParams(uri, params);
+        return request(GET, uri, null, responseClass);
     }
 
-    public BooleanResponse replayDelete(Long roomId) {
-        var params = Map.of("roomId", roomId.toString());
-        return request(POST, "replay/delete", params, BooleanResponse.class);
+    private <T> T post(String uri, Object params, Type responseClass) {
+        return request(POST, uri, params, responseClass);
     }
 
     private <T> T request(String method, String uri, Object params, Type responseClass) {
-        var urlBuilder = new HttpUrl.Builder()
-                .scheme("https")
-                .host(server)
-                .addPathSegment("api-v2")
-                .addPathSegments(uri);
+        var url = "https://" + server + "/api-v2" + uri;
 
-        if (GET.equals(method)) {
-            Map<String, Object> queries;
-            if (params instanceof QueryParams) {
-                queries = ((QueryParams) params).toQueryParams();
-            } else {
-                queries = gson.fromJson(gson.toJson(params), new TypeToken<Map<String, Object>>() {}.getType());
-            }
-
-            for(var query : queries.entrySet()) {
-                urlBuilder.addQueryParameter(query.getKey(), query.getValue().toString());
-            }
-        }
-        var url = urlBuilder.build();
-
-        log.info(" request: {} {}", method, url.toString());
+        log.info(" request: {} {}", method, url);
 
         var token = JWT.create()
                 .withKeyId(accessKey)

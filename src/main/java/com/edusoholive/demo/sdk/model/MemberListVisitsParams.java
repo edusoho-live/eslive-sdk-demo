@@ -14,11 +14,11 @@ public class MemberListVisitsParams implements QueryParams {
     private Long limit;
 
     @Override
-    public Map<String, Object> toQueryParams() {
+    public Map<String, String> toQueryParams() {
         return Map.of(
-                "roomId", roomId,
-                "offset", offset,
-                "limit", limit
+                "roomId", roomId.toString(),
+                "offset", offset.toString(),
+                "limit", limit.toString()
         );
     }
 }

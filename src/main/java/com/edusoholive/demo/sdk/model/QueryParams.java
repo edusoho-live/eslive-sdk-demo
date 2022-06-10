@@ -4,5 +4,5 @@ import java.util.Map;
 
 public interface QueryParams {
 
-    Map<String, Object> toQueryParams();
+    Map<String, String> toQueryParams();
 }
