@@ -22,6 +22,8 @@ public class EsliveApiClient {
 
     private static final String GET = "GET";
 
+    private static final String userAgent = "ESLiveApiJavaSDK/1.0.0";
+
     private static final MediaType JSON_TYPE
             = MediaType.get("application/json; charset=utf-8");
 
@@ -129,7 +131,7 @@ public class EsliveApiClient {
 
         var req = new Request.Builder()
                 .url(url)
-                .header("User-Agent", "eslive-api-java-sdk v1.0.0")
+                .header("User-Agent", userAgent)
                 .header("Authorization","Bearer " + token);
 
         if (POST.equals(method)) {
