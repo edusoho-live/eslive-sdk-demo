@@ -1,5 +1,8 @@
 package com.edusoholive.demo.sdk.model;
 
+import lombok.Data;
+
+@Data
 public class Member {
 
     private Long roomId;

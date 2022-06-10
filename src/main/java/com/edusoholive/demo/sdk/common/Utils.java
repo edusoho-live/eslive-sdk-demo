@@ -1,6 +1,4 @@
-package com.edusoholive.demo.sdk;
-
-import com.edusoholive.demo.sdk.model.QueryParams;
+package com.edusoholive.demo.sdk.common;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;

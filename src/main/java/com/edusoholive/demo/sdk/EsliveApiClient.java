@@ -2,6 +2,7 @@ package com.edusoholive.demo.sdk;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.edusoholive.demo.sdk.common.*;
 import com.edusoholive.demo.sdk.model.*;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;

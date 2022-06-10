@@ -1,5 +1,6 @@
 package com.edusoholive.demo.sdk.model;
 
+import com.edusoholive.demo.sdk.common.QueryParams;
 import lombok.Data;
 
 import java.util.Map;

@@ -1,4 +1,4 @@
-package com.edusoholive.demo.sdk.model;
+package com.edusoholive.demo.sdk.common;
 
 import java.util.Map;
 
