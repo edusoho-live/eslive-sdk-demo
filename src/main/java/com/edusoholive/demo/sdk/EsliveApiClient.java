@@ -33,14 +33,12 @@ public class EsliveApiClient {
 
     private final String secretKey;
 
-    private String server = "live.edusoho.com";
+    private final String server;
 
     public EsliveApiClient(ClientConfig config) {
-        if (Utils.isNotEmpty(config.getServer())) {
-            server = config.getServer();
-        }
         accessKey = config.getAccessKey();
         secretKey = config.getSecretKey();
+        server = Utils.isEmpty(config.getServer()) ? "live.edusoho.com" : config.getServer();
     }
 
     public Room roomGet(Long id) {
