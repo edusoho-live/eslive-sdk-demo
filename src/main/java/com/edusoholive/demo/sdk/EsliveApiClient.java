@@ -8,6 +8,7 @@ import com.google.gson.reflect.TypeToken;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.List;
@@ -28,11 +29,11 @@ public class EsliveApiClient {
 
     private final Gson gson = new Gson();
 
+    private final String accessKey;
+
+    private final String secretKey;
+
     private String server = "live.edusoho.com";
-
-    private String accessKey;
-
-    private String secretKey;
 
     public EsliveApiClient(ClientConfig config) {
         if (Utils.isNotEmpty(config.getServer())) {
@@ -122,8 +123,6 @@ public class EsliveApiClient {
     private <T> T request(String method, String uri, Object params, Type responseClass) {
         var url = "https://" + server + "/api-v2" + uri;
 
-        log.info(" request: {} {}", method, url);
-
         var token = JWT.create()
                 .withKeyId(accessKey)
                 .withIssuer("live api")
@@ -137,27 +136,36 @@ public class EsliveApiClient {
 
         if (POST.equals(method)) {
             var body = gson.toJson(params);
-
-            log.info("request body: {}", body);
-
             req.post(RequestBody.create(body, JSON_TYPE));
         }
 
+        Response response;
         try {
-            var response = client.newCall(req.build()).execute();
-            var result = response.body().string();
+            response = client.newCall(req.build()).execute();
+        } catch (IOException e) {
+            throw new EsliveApiException("CLIENT_REQUEST_FAILED", e.getMessage());
+        }
 
-            log.info("response: {}", result);
+        if (response.body() == null) {
+            throw new EsliveApiException("CLIENT_RESPONSE_FAILED", "Response body is null");
+        }
 
-            if (response.isSuccessful()) {
-                return gson.fromJson(result, responseClass);
-            } else {
-                var error = gson.fromJson(result, ErrorResponse.class);
-                throw new EsliveApiException(error.getCode(), error.getMessage());
-            }
+        String result;
+        try {
+            result = response.body().string();
+        } catch (IOException e) {
+            throw new EsliveApiException("CLIENT_RESPONSE_FAILED", e.getMessage());
+        }
 
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+        if (Utils.isEmpty(result)) {
+            throw new EsliveApiException("CLIENT_RESPONSE_FAILED", "Response body is empty");
+        }
+
+        if (response.isSuccessful()) {
+            return gson.fromJson(result, responseClass);
+        } else {
+            var error = gson.fromJson(result, ErrorResponse.class);
+            throw new EsliveApiException(error.getCode(), error.getMessage());
         }
     }
 }
