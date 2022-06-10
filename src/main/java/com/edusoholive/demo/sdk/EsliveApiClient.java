@@ -29,14 +29,14 @@ public class EsliveApiClient {
 
     private final Gson gson = new Gson();
 
-    private String accessKey = "";
+    private String server = "live.edusoho.com";
 
-    private String secretKey = "";
+    private String accessKey;
 
-    private String server = "";
+    private String secretKey;
 
     public EsliveApiClient(ClientConfig config) {
-        if (StringUtils.isNotBlank(config.getServer())) {
+        if (Utils.isNotEmpty(config.getServer())) {
             server = config.getServer();
         }
         accessKey = config.getAccessKey();
@@ -159,7 +159,13 @@ public class EsliveApiClient {
 
             log.info("response: {}", result);
 
-            return gson.fromJson(result, responseClass);
+            if (response.isSuccessful()) {
+                return gson.fromJson(result, responseClass);
+            } else {
+                var error = gson.fromJson(result, ErrorResponse.class);
+                throw new EsliveApiException(error.getCode(), error.getMessage());
+            }
+
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
