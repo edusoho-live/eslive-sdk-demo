@@ -5,6 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.edusoholive.demo.sdk.model.*;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.apache.commons.lang3.StringUtils;
 
@@ -12,6 +13,7 @@ import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.Map;
 
+@Slf4j
 public class EsliveApiClient {
 
     private static final String POST = "POST";
@@ -25,11 +27,11 @@ public class EsliveApiClient {
 
     private final Gson gson = new Gson();
 
-    private String accessKey = "flv_self_aliyun";
+    private String accessKey = "";
 
-    private String secretKey = "testSecretKey4";
+    private String secretKey = "";
 
-    private String server = "live-dev.edusoho.cn";
+    private String server = "";
 
     public EsliveApiClient(ClientConfig config) {
         if (StringUtils.isNotBlank(config.getServer())) {
@@ -39,22 +41,38 @@ public class EsliveApiClient {
         secretKey = config.getSecretKey();
     }
 
-    public Pager<RoomMember> memberList(RoomCreateParams params) {
-        var pagerType = new TypeToken<Pager<RoomMember>>(){}.getType();
+    public Room roomGet(Long id) {
+        var params = Map.of("id", id.toString());
+        return request(GET, "room/get", params, Room.class);
+    }
+
+    public RoomSimple roomCreate(RoomCreateParams params) {
+        return request( POST, "room/create", params, RoomSimple.class);
+    }
+
+    public RoomSimple roomUpdate(RoomUpdateParams params) {
+        return request( POST, "room/update", params, RoomSimple.class);
+    }
+
+    public BooleanResponse roomClose(Long id) {
+        var params = Map.of("id", id.toString());
+        return request(POST, "room/close", params, BooleanResponse.class);
+    }
+
+    public BooleanResponse roomDelete(Long id) {
+        var params = Map.of("id", id.toString());
+        return request(POST, "room/delete", params, BooleanResponse.class);
+    }
+
+    public Pager<Member> memberList(MemberListParams params) {
+        var pagerType = new TypeToken<Pager<Member>>(){}.getType();
         return request(GET, "member/list", params, pagerType);
     }
 
-    public Room roomCreate(RoomCreateParams params) {
-        return request( POST, "room/create", params, Room.class);
+    public Pager<MemberVisit> memberListVisits(MemberListVisitsParams params) {
+        var pagerType = new TypeToken<Pager<MemberVisit>>(){}.getType();
+        return request(GET, "member/listVisits", params, pagerType);
     }
-
-//    private <T> List<T> getOfList(String uri, Object params, Class<T> responseClass) {
-//
-//    }
-//
-//    private <T> Pager<T> getOfPager(String uri, Object params, Class<T> responseClass) {
-//
-//    }
 
     public String roomGetEnterUrl(Long roomId, Long userId, String name, Role role) {
         var token = JWT.create()
@@ -78,12 +96,20 @@ public class EsliveApiClient {
                 .addPathSegments(uri);
 
         if (GET.equals(method)) {
-            Map<String, Object> queries = gson.fromJson(gson.toJson(params), new TypeToken<Map<String, Object>>() {}.getType());
+            Map<String, Object> queries;
+            if (params instanceof QueryParams) {
+                queries = ((QueryParams) params).toQueryParams();
+            } else {
+                queries = gson.fromJson(gson.toJson(params), new TypeToken<Map<String, Object>>() {}.getType());
+            }
+
             for(var query : queries.entrySet()) {
                 urlBuilder.addQueryParameter(query.getKey(), query.getValue().toString());
             }
         }
         var url = urlBuilder.build();
+
+        log.info(" request: {} {}", method, url.toString());
 
         var token = JWT.create()
                 .withKeyId(accessKey)
@@ -98,12 +124,17 @@ public class EsliveApiClient {
 
         if (POST.equals(method)) {
             var body = gson.toJson(params);
+
+            log.info("request body: {}", body);
+
             req.post(RequestBody.create(body, JSON_TYPE));
         }
 
         try {
             var response = client.newCall(req.build()).execute();
             var result = response.body().string();
+
+            log.info("response: {}", result);
 
             return gson.fromJson(result, responseClass);
         } catch (Exception e) {
