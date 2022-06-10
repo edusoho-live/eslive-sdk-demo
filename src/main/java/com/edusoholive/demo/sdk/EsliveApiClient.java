@@ -6,7 +6,6 @@ import com.edusoholive.demo.sdk.common.*;
 import com.edusoholive.demo.sdk.model.*;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 
 import java.io.IOException;
@@ -16,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Slf4j
 public class EsliveApiClient {
 
     private static final String POST = "POST";

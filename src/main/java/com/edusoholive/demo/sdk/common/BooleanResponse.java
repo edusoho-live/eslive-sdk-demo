@@ -1,10 +1,14 @@
 package com.edusoholive.demo.sdk.common;
 
-import lombok.Data;
-
-@Data
 public class BooleanResponse {
 
     private Boolean ok;
 
+    public Boolean getOk() {
+        return ok;
+    }
+
+    public void setOk(Boolean ok) {
+        this.ok = ok;
+    }
 }
