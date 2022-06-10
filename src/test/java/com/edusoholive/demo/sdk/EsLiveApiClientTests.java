@@ -4,6 +4,9 @@ import com.edusoholive.demo.sdk.model.*;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
@@ -23,8 +26,7 @@ public class EsLiveApiClientTests {
         testRoom = createTestRoom();
     }
 
-    @Test
-    void roomCreate() {
+    @Test void roomCreate() {
         var params = new RoomCreateParams();
         params.setName("Java API SDK Unit Test - " + System.currentTimeMillis());
         params.setStartAt(System.currentTimeMillis() + 600000);
@@ -38,14 +40,12 @@ public class EsLiveApiClientTests {
         assertEquals(params.getEndAt(), room.getEndAt());
     }
 
-    @Test
-    void roomGet() {
+    @Test void roomGet() {
         var room = client.roomGet(testRoom.getId());
         assertEquals(testRoom.getId(), room.getId());
     }
 
-    @Test
-    void roomUpdate() {
+    @Test void roomUpdate() {
         var params = new RoomUpdateParams();
         params.setId(testRoom.getId());
         params.setName(testRoom.getName() + "-" + System.currentTimeMillis());
@@ -59,24 +59,21 @@ public class EsLiveApiClientTests {
         assertEquals(params.getEndAt(), updated.getEndAt());
     }
 
-    @Test
-    void roomClose() {
+    @Test void roomClose() {
         var room = createTestRoom();
         var closed = client.roomClose(room.getId());
 
         assertTrue(closed.getOk());
     }
 
-    @Test
-    void roomDelete() {
+    @Test void roomDelete() {
         var room = createTestRoom();
         var deleted = client.roomDelete(room.getId());
 
         assertTrue(deleted.getOk());
     }
 
-    @Test
-    void memberList() {
+    @Test void memberList() {
         var params = new MemberListParams();
         params.setRoomId(testRoom.getId());
         params.setOffset(0L);
@@ -87,8 +84,7 @@ public class EsLiveApiClientTests {
         assertEquals(0, members.getTotal());
     }
 
-    @Test
-    void memberListVisits() {
+    @Test void memberListVisits() {
         var params = new MemberListVisitsParams();
         params.setRoomId(testRoom.getId());
         params.setOffset(0L);
@@ -97,6 +93,23 @@ public class EsLiveApiClientTests {
 
         assertEquals(0, members.getData().size());
         assertEquals(0, members.getTotal());
+    }
+
+    @Test void replayGet() {
+        var replay = client.replayGet(testRoom.getId());
+
+        log.info("replay {}", replay);
+    }
+
+    @Test void replayGets() {
+        var roomIds = List.of(1L, 2L, 3L);
+        var replays = client.replayGets(roomIds);
+        log.info("replays {}", replays);
+    }
+
+    @Test void replayDelete() {
+        var deleted = client.replayDelete(testRoom.getId());
+        log.info("deleted {}", deleted);
     }
 
     private RoomSimple createTestRoom() {

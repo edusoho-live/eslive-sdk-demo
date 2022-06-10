@@ -11,7 +11,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Type;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class EsliveApiClient {
@@ -86,6 +88,27 @@ public class EsliveApiClient {
                 .sign(Algorithm.HMAC256(secretKey));
 
         return "https://" + server + "/h5/room/" + roomId.toString() + "/enter?token=" + token;
+    }
+
+    public Replay replayGet(Long roomId) {
+        var params = Map.of("roomId", roomId.toString());
+        return request(GET, "replay/get", params, Replay.class);
+    }
+
+    public List<Replay> replayGets(List<Long> roomIds) {
+        var roomIdsStr = roomIds.stream().map(Object::toString).collect(Collectors.joining(","));
+
+        log.info("room id str: {}", roomIdsStr);
+
+        var params = Map.of("roomIds", roomIdsStr);
+
+        var listType = new TypeToken<List<MemberVisit>>(){}.getType();
+        return request(GET, "replay/gets", params, listType);
+    }
+
+    public BooleanResponse replayDelete(Long roomId) {
+        var params = Map.of("roomId", roomId.toString());
+        return request(POST, "replay/delete", params, BooleanResponse.class);
     }
 
     private <T> T request(String method, String uri, Object params, Type responseClass) {
