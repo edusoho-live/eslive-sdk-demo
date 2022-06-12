@@ -3,7 +3,7 @@ package com.edusoholive.demo.mapper;
 import com.edusoholive.demo.dto.LessonCreateParams;
 import com.edusoholive.demo.dto.LessonDto;
 import com.edusoholive.demo.entity.Lesson;
-import com.edusoholive.demo.sdk.model.RoomCreateParams;
+import com.edusoho.live.sdk.model.RoomCreateParams;
 import org.springframework.stereotype.Component;
 
 @Component
