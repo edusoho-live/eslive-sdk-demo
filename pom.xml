@@ -38,7 +38,7 @@
 		<dependency>
 			<groupId>com.edusoho.live</groupId>
 			<artifactId>eslive-api-java-sdk</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1</version>
 		</dependency>
 	</dependencies>
 	<build>
