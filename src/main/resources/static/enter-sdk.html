@@ -5,8 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,minimum-scale=1,viewport-fit=cover,user-scalable=no">
     <title>EduSoho 大班课 SDK DEMO</title>
     <script src="lib/common.js"></script>
+    <script src="//unpkg.com/@edusoho-live/eslive-web-sdk@latest"></script>
 </head>
 <body>
+
+<div id="eslive-container"
+     style="position: absolute;left: 0;right: 0;top: 0;bottom: 0;"></div>
 
 <script>
     const run = async () => {
@@ -27,7 +31,11 @@
 
         console.log("room params: ", roomParams);
 
-        window.location.href = roomParams.url;
+        const sdk = new ESLiveWebSDK();
+        await sdk.connect({
+            container: "eslive-container",
+            url: roomParams.url,
+        });
     }
     run();
 </script>
